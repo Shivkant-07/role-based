@@ -9,24 +9,35 @@ const Navbar = () => {
   if (!user) return null;
 
   return (
-    <nav style={{ padding: '15px', background: '#222', color: '#fff', display: 'flex', gap: '20px', alignItems: 'center' }}>
-      <Link to="/dashboard" style={{ color: '#fff', textDecoration: 'none' }}>Dashboard</Link>
-      
-      {(user.role === 'Admin' || user.role === 'Manager') && (
-        <Link to="/employees" style={{ color: '#fff', textDecoration: 'none' }}>Employees</Link>
-      )}
+    <nav className="bg-slate-900 text-white px-6 py-4 flex justify-between items-center shadow-md">
+      <div className="flex items-center space-x-6">
+        <span className="font-bold text-lg tracking-wide text-indigo-400">RBAC App</span>
+        <Link to="/dashboard" className="hover:text-indigo-300 transition">Dashboard</Link>
+        
+        {(user.role === 'Admin' || user.role === 'Manager') && (
+          <Link to="/employees" className="hover:text-indigo-300 transition">Employees</Link>
+        )}
 
-      {user.role === 'Admin' && (
-        <Link to="/admin" style={{ color: '#fff', textDecoration: 'none' }}>Admin Panel</Link>
-      )}
+        {user.role === 'Admin' && (
+          <Link to="/admin" className="hover:text-indigo-300 transition">Admin Panel</Link>
+        )}
 
-      <Link to="/profile" style={{ color: '#fff', textDecoration: 'none' }}>Profile</Link>
-      
-      <button onClick={() => { logout(); navigate('/login'); }} style={{ marginLeft: 'auto', background: 'crimson', color: '#fff', border: 'none', padding: '5px 10px', cursor: 'pointer' }}>
-        Logout
-      </button>
+        <Link to="/profile" className="hover:text-indigo-300 transition">Profile</Link>
+      </div>
+
+      <div className="flex items-center space-x-4">
+        <span className="text-sm bg-slate-800 px-3 py-1 rounded-full border border-slate-700">
+          {user.name} ({user.role})
+        </span>
+        <button 
+          onClick={() => { logout(); navigate('/login'); }} 
+          className="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition cursor-pointer"
+        >
+          Logout
+        </button>
+      </div>
     </nav>
   );
 };
 
-export default Navbar;   
+export default Navbar;

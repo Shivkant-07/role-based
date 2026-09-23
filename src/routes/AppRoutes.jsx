@@ -4,6 +4,7 @@ import Login from '../pages/Login';
 import Register from '../pages/Register';
 import Dashboard from '../pages/Dashboard';
 import Employees from '../pages/Employees';
+import Manager from '../pages/Manager'; // 1. Yahan import kiya
 import Profile from '../pages/Profile';
 import AdminPanel from '../pages/AdminPanel';
 import AccessDenied from '../pages/AccessDenied';
@@ -19,6 +20,13 @@ const AppRoutes = () => {
       <Route path="/dashboard" element={
         <ProtectedRoute allowedRoles={['Admin', 'Manager', 'Employee']}>
           <Dashboard />
+        </ProtectedRoute>
+      } />
+
+      {/* 2. Yahan Manager route add kiya */}
+      <Route path="/manager" element={
+        <ProtectedRoute allowedRoles={['Admin', 'Manager']}>
+          <Manager />
         </ProtectedRoute>
       } />
 

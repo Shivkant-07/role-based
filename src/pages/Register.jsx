@@ -13,8 +13,30 @@ const Register = () => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
+    
+    // 1. Pehle Auth context ke zariye user register karo
     const res = register({ name, email, password, role });
+    
     if (res.success) {
+      // 2. Automatically user ko 'employeesList' localStorage mein bhi add kar do taaki dashboard par dikhe
+      const existingEmployees = JSON.parse(localStorage.getItem('employeesList')) || [];
+      
+      const newUserEntry = {
+        id: Date.now(),
+        name: name,
+        email: email,
+        role: role,
+        status: 'Active'
+      };
+
+      // Check karo ki email pehle se list me toh nahi hai
+      const isAlreadyExists = existingEmployees.some(emp => emp.email === email);
+      if (!isAlreadyExists) {
+        existingEmployees.push(newUserEntry);
+        localStorage.setItem('employeesList', JSON.stringify(existingEmployees));
+      }
+
+      // 3. Login page par redirect kar do
       navigate('/login');
     } else {
       setError(res.message);
@@ -47,7 +69,7 @@ const Register = () => {
               <option value="Employee">Employee</option>
             </select>
           </div>
-          <button type="submit" className="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-medium py-2 rounded-lg transition">Register</button>
+          <button type="submit" className="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-medium py-2 rounded-lg transition cursor-pointer">Register</button>
         </form>
         <p className="mt-4 text-center text-sm text-slate-600">
           Already have an account? <Link to="/login" className="text-indigo-600 font-medium hover:underline">Login</Link>

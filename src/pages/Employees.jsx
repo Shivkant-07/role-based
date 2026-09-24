@@ -8,7 +8,7 @@ const Employees = () => {
   const [isEditing, setIsEditing] = useState(false);
   const [currentId, setCurrentId] = useState(null);
   
-  // Form state (Fixed role as Employee)
+  // Form state
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [role] = useState('Employee');
@@ -29,13 +29,13 @@ const Employees = () => {
     const savedEmployees = JSON.parse(localStorage.getItem('employeesList')) || [];
     
     if (isEditing) {
-      // Update existing record in the main list
+      // Update existing record in the main list keeping existing timestamps
       const newList = savedEmployees.map(emp => 
         emp.id === currentId ? { ...emp, name, email, role } : emp
       );
       localStorage.setItem('employeesList', JSON.stringify(newList));
     } else {
-      // Append new employee to the main list
+      // Append new employee to the main list with timestamp
       localStorage.setItem('employeesList', JSON.stringify([...savedEmployees, updatedEmployee]));
     }
     loadEmployees();
@@ -61,6 +61,8 @@ const Employees = () => {
   // Handle Form Submit
   const handleSubmit = (e) => {
     e.preventDefault();
+    const timestamp = new Date().toLocaleString();
+
     if (isEditing) {
       saveToLocalStorage();
     } else {
@@ -68,7 +70,10 @@ const Employees = () => {
         id: Date.now(),
         name,
         email,
-        role
+        role,
+        status: 'Active',
+        joinedAt: timestamp,
+        lastLogin: 'Manual Onboard'
       };
       saveToLocalStorage(newEmp);
     }
@@ -96,7 +101,7 @@ const Employees = () => {
       <div className="bg-white p-6 rounded-2xl shadow-sm border border-slate-200 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div>
           <h1 className="text-2xl font-extrabold text-slate-800 tracking-tight">Employee Directory</h1>
-          <p className="text-slate-500 text-sm mt-0.5">Manage working staff, onboard new profiles, and modify details.</p>
+          <p className="text-slate-500 text-sm mt-0.5">Manage working staff, onboard new profiles, and view login activities.</p>
         </div>
         <div className="flex items-center gap-3">
           <span className="bg-blue-50 border border-blue-100 text-blue-700 px-4 py-2 rounded-xl text-xs font-bold tracking-wide uppercase">
@@ -120,6 +125,8 @@ const Employees = () => {
                 <th className="p-4.5">Employee Profile</th>
                 <th className="p-4.5">Email Address</th>
                 <th className="p-4.5">System Role</th>
+                <th className="p-4.5">Joined / Registered Time</th>
+                <th className="p-4.5">Last Login Time</th>
                 <th className="p-4.5 text-right">Actions</th>
               </tr>
             </thead>
@@ -130,7 +137,7 @@ const Employees = () => {
                     <td className="p-4.5">
                       <div className="flex items-center gap-3">
                         <div className="w-9 h-9 rounded-full bg-blue-100 text-blue-700 font-bold flex items-center justify-center text-sm shadow-inner">
-                          {emp.name.charAt(0).toUpperCase()}
+                          {emp.name ? emp.name.charAt(0).toUpperCase() : 'U'}
                         </div>
                         <span className="font-semibold text-slate-800">{emp.name}</span>
                       </div>
@@ -141,6 +148,12 @@ const Employees = () => {
                         {emp.role}
                       </span>
                     </td>
+                    <td className="p-4.5 text-xs text-slate-600 font-medium">
+                      {emp.joinedAt || emp.createdAt || 'N/A'}
+                    </td>
+                    <td className="p-4.5 text-xs text-emerald-600 font-medium">
+                      {emp.lastLogin || 'Not Logged In'}
+                    </td>
                     <td className="p-4.5 text-right space-x-2">
                       <button 
                         onClick={() => handleEditClick(emp)} 
@@ -149,7 +162,6 @@ const Employees = () => {
                         Edit Details
                       </button>
 
-                      {/* Delete button sirf Admin ke liye dikhega */}
                       {user?.role === 'Admin' && (
                         <button 
                           onClick={() => handleDelete(emp.id)} 
@@ -163,7 +175,7 @@ const Employees = () => {
                 ))
               ) : (
                 <tr>
-                  <td colSpan="4" className="p-12 text-center text-slate-400">
+                  <td colSpan="6" className="p-12 text-center text-slate-400">
                     <p className="text-base font-medium text-slate-500 mb-1">No employees found</p>
                     <p className="text-xs text-slate-400">Click on the "+ Add Employee" button above to onboard new staff members.</p>
                   </td>
@@ -214,7 +226,7 @@ const Employees = () => {
                   disabled 
                   className="w-full px-4 py-2.5 text-sm border border-slate-200 rounded-xl bg-slate-100 text-slate-500 cursor-not-allowed" 
                 />
-                <p className="text-[11px] text-slate-400 mt-1">New records in this directory are assigned the Employee role.</p>
+                <p className="text-[11px] text-slate-400 mt-1">New records in this directory are assigned the Employee role with timestamp.</p>
               </div>
 
               <div className="flex items-center justify-end space-x-3 pt-4 border-t border-slate-100 mt-6">

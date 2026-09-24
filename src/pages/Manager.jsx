@@ -23,24 +23,18 @@ const Manager = () => {
   }, []);
 
   // Save changes to full localStorage list
-  const saveToLocalStorage = () => {
+  const saveToLocalStorage = (updatedManager) => {
     const savedEmployees = JSON.parse(localStorage.getItem('employeesList')) || [];
     
     if (isEditing) {
-      // Update existing record in the main list
+      // Update existing record in the main list keeping timestamps intact
       const updatedList = savedEmployees.map(emp => 
         emp.id === currentId ? { ...emp, name, email, role } : emp
       );
       localStorage.setItem('employeesList', JSON.stringify(updatedList));
     } else {
-      // Append new manager to the main list
-      const newManager = {
-        id: Date.now(),
-        name,
-        email,
-        role
-      };
-      localStorage.setItem('employeesList', JSON.stringify([...savedEmployees, newManager]));
+      // Append new manager to the main list with timestamp
+      localStorage.setItem('employeesList', JSON.stringify([...savedEmployees, updatedManager]));
     }
     loadManagers();
   };
@@ -65,7 +59,22 @@ const Manager = () => {
   // Handle Form Submit
   const handleSubmit = (e) => {
     e.preventDefault();
-    saveToLocalStorage();
+    const timestamp = new Date().toLocaleString();
+
+    if (isEditing) {
+      saveToLocalStorage();
+    } else {
+      const newManager = {
+        id: Date.now(),
+        name,
+        email,
+        role,
+        status: 'Active',
+        joinedAt: timestamp,
+        lastLogin: 'Manual Onboard'
+      };
+      saveToLocalStorage(newManager);
+    }
     setIsModalOpen(false);
   };
 
@@ -86,7 +95,7 @@ const Manager = () => {
       <div className="bg-white p-6 rounded-2xl shadow-sm border border-slate-200 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div>
           <h1 className="text-2xl font-extrabold text-slate-800 tracking-tight">Manager Directory</h1>
-          <p className="text-slate-500 text-sm mt-0.5">Manage and oversee all active managerial personnel in the platform.</p>
+          <p className="text-slate-500 text-sm mt-0.5">Manage and oversee all active managerial personnel and their login activities.</p>
         </div>
         <div className="flex items-center gap-3">
           <span className="bg-purple-50 border border-purple-100 text-purple-700 px-4 py-2 rounded-xl text-xs font-bold tracking-wide uppercase">
@@ -110,6 +119,8 @@ const Manager = () => {
                 <th className="p-4.5">Manager Profile</th>
                 <th className="p-4.5">Email Address</th>
                 <th className="p-4.5">Assigned Role</th>
+                <th className="p-4.5">Joined / Registered Time</th>
+                <th className="p-4.5">Last Login Time</th>
                 <th className="p-4.5 text-right">Actions</th>
               </tr>
             </thead>
@@ -120,7 +131,7 @@ const Manager = () => {
                     <td className="p-4.5">
                       <div className="flex items-center gap-3">
                         <div className="w-9 h-9 rounded-full bg-purple-100 text-purple-700 font-bold flex items-center justify-center text-sm shadow-inner">
-                          {mgr.name.charAt(0).toUpperCase()}
+                          {mgr.name ? mgr.name.charAt(0).toUpperCase() : 'U'}
                         </div>
                         <span className="font-semibold text-slate-800">{mgr.name}</span>
                       </div>
@@ -130,6 +141,12 @@ const Manager = () => {
                       <span className="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold bg-purple-50 text-purple-700 border border-purple-100">
                         {mgr.role}
                       </span>
+                    </td>
+                    <td className="p-4.5 text-xs text-slate-600 font-medium">
+                      {mgr.joinedAt || mgr.createdAt || 'N/A'}
+                    </td>
+                    <td className="p-4.5 text-xs text-purple-600 font-medium">
+                      {mgr.lastLogin || 'Not Logged In'}
                     </td>
                     <td className="p-4.5 text-right space-x-2">
                       <button 
@@ -149,7 +166,7 @@ const Manager = () => {
                 ))
               ) : (
                 <tr>
-                  <td colSpan="4" className="p-12 text-center text-slate-400">
+                  <td colSpan="6" className="p-12 text-center text-slate-400">
                     <p className="text-base font-medium text-slate-500 mb-1">No managers found</p>
                     <p className="text-xs text-slate-400">Click on the "+ Add Manager" button above to onboard new managers.</p>
                   </td>

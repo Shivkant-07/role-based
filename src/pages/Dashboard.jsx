@@ -68,8 +68,8 @@ const Dashboard = () => {
   return (
     <div className="p-8 max-w-7xl mx-auto space-y-8">
       
-      {/* Welcome / Header Banner */}
-      <div className="bg-gradient-to-r from-slate-900 via-slate-800 to-indigo-950 rounded-2xl p-8 text-white shadow-xl flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+      {/* Welcome / Header Banner with Timestamps */}
+      <div className="bg-gradient-to-r from-slate-900 via-slate-800 to-indigo-950 rounded-2xl p-8 text-white shadow-xl flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
         <div>
           <div className="flex items-center gap-2 mb-2">
             <span className="bg-indigo-500/20 text-indigo-300 border border-indigo-500/30 px-2.5 py-0.5 rounded-full text-xs font-semibold uppercase tracking-wider">
@@ -82,16 +82,33 @@ const Dashboard = () => {
               ? 'Manage your daily tasks, track productivity, and check account status.' 
               : 'Here is your workspace overview and system-wide metrics for today.'}
           </p>
+
+          {/* Login & Registration Time Display */}
+          <div className="flex flex-wrap items-center gap-4 mt-4 pt-4 border-t border-slate-700/60 text-xs text-slate-300">
+            {user?.createdAt && (
+              <div className="flex items-center gap-1.5 bg-slate-800/80 px-3 py-1 rounded-lg border border-slate-700">
+                <span className="text-indigo-400 font-semibold">Registered At:</span> 
+                <span>{user.createdAt}</span>
+              </div>
+            )}
+            {user?.lastLogin && (
+              <div className="flex items-center gap-1.5 bg-slate-800/80 px-3 py-1 rounded-lg border border-slate-700">
+                <span className="text-emerald-400 font-semibold">Last Login:</span> 
+                <span>{user.lastLogin}</span>
+              </div>
+            )}
+          </div>
         </div>
-        <div className="bg-white/10 backdrop-blur-md border border-white/15 px-5 py-3 rounded-xl text-right">
-          <p className="text-xs text-slate-300 uppercase tracking-wider font-semibold">Access Privilege</p>
-          <p className="text-xl font-bold text-emerald-400">
+
+        <div className="bg-white/15 backdrop-blur-md border border-white/20 px-5 py-4 rounded-xl text-right shrink-0">
+          <p className="text-xs text-slate-200 uppercase tracking-wider font-semibold">Access Privilege</p>
+          <p className="text-xl font-bold text-emerald-400 mt-0.5">
             {user?.role === 'Admin' ? 'Full Control' : user?.role === 'Manager' ? 'Department Lead' : 'Employee Access'}
           </p>
         </div>
       </div>
 
-      {/* Stats Grid (Employee vs Manager vs Admin) */}
+      {/* Stats Grid */}
       {user?.role === 'Employee' ? (
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div className="bg-white p-6 rounded-2xl shadow-sm border border-slate-200 flex items-center justify-between">
@@ -120,7 +137,6 @@ const Dashboard = () => {
         </div>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          {/* Total Staff / Total Employees Card based on Role */}
           <div className="bg-white p-6 rounded-2xl shadow-sm border border-slate-200 flex items-center justify-between">
             <div>
               <p className="text-xs font-semibold text-slate-400 uppercase tracking-wider">
@@ -257,7 +273,7 @@ const Dashboard = () => {
         </div>
       )}
 
-      {/* Quick Navigation Cards (Sirf Admin aur Manager ke liye) */}
+      {/* Quick Navigation Cards */}
       {user?.role !== 'Employee' && (
         <div>
           <h2 className="text-xl font-bold text-slate-800 mb-4">Quick Navigation</h2>
